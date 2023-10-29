@@ -9,12 +9,11 @@ import Foundation
 
 class Objective:Codable {
     var id: String  = ""
-    var desc: String
+    var desc: String = ""
     var videos: [String]
     var references: [String]
     
     init() {
-        desc = ""
         videos = []
         references = []
     }

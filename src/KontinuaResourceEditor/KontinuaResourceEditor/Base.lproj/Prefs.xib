@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="22155" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22155"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="PrefsController" customModule="KontinuaResourceEditor" customModuleProvider="target">
+            <connections>
+                <outlet property="pathField" destination="ChH-Yg-4Bs" id="XA4-ju-xHi"/>
+                <outlet property="window" destination="QvC-M9-y7g" id="gee-VK-JKc"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="721" height="105"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
+                <rect key="frame" x="0.0" y="0.0" width="721" height="105"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qEo-pX-83i">
+                        <rect key="frame" x="13" y="58" width="157" height="32"/>
+                        <buttonCell key="cell" type="push" title="Set objectives file...." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rEn-4A-tkw">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="143" id="8JY-St-5OI"/>
+                            <constraint firstAttribute="height" constant="20" id="mbA-NZ-FhQ"/>
+                        </constraints>
+                        <connections>
+                            <action selector="startPathPanel:" target="-2" id="r4I-yG-vWP"/>
+                        </connections>
+                    </button>
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ChH-Yg-4Bs">
+                        <rect key="frame" x="20" y="30" width="683" height="16"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="16" id="dCp-NB-2rf"/>
+                        </constraints>
+                        <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="sid-3b-eEu">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <action selector="startPathPanel:" target="-2" id="eTU-da-dG1"/>
+                        </connections>
+                    </textField>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="ChH-Yg-4Bs" firstAttribute="leading" secondItem="qEo-pX-83i" secondAttribute="leading" id="0gp-sh-WNT"/>
+                    <constraint firstItem="qEo-pX-83i" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" symbolic="YES" id="7I0-WU-d1J"/>
+                    <constraint firstAttribute="bottom" secondItem="ChH-Yg-4Bs" secondAttribute="bottom" constant="30" id="KgC-Ar-I4g"/>
+                    <constraint firstItem="qEo-pX-83i" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="20" symbolic="YES" id="ncs-HI-0A5"/>
+                    <constraint firstAttribute="trailing" secondItem="ChH-Yg-4Bs" secondAttribute="trailing" constant="14" id="rKu-Fh-vsq"/>
+                    <constraint firstItem="ChH-Yg-4Bs" firstAttribute="top" secondItem="qEo-pX-83i" secondAttribute="bottom" constant="19" id="v9t-Zb-Wkm"/>
+                </constraints>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="kSY-1F-kcF"/>
+            </connections>
+            <point key="canvasLocation" x="64.5" y="29.5"/>
+        </window>
+    </objects>
+</document>

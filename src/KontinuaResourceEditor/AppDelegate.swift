@@ -30,5 +30,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         os_log("Checking for untitled")
         return false
     }
+    
+    // Bring the Preferences Panel on screen
+    @IBAction func showPrefs(_ sender:Any) {
+        let prefs = PrefsController()
+        prefs.showWindow(nil)
+    }
 }
 

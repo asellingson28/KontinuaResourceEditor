@@ -13,6 +13,8 @@
 		931FF4D52AE08C8D00540A4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 931FF4D42AE08C8D00540A4C /* Assets.xcassets */; };
 		931FF4D82AE08C8D00540A4C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 931FF4D62AE08C8D00540A4C /* MainMenu.xib */; };
 		931FF4E12AE0918100540A4C /* Chapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931FF4E02AE0918100540A4C /* Chapter.swift */; };
+		932340AD2AEEA6FA0046B0CF /* Prefs.xib in Resources */ = {isa = PBXBuildFile; fileRef = 932340AB2AEEA6FA0046B0CF /* Prefs.xib */; };
+		932340AF2AEEA7400046B0CF /* PrefsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932340AE2AEEA7400046B0CF /* PrefsController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,7 +26,9 @@
 		931FF4D72AE08C8D00540A4C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		931FF4D92AE08C8D00540A4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		931FF4DA2AE08C8D00540A4C /* KontinuaResourceEditor.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KontinuaResourceEditor.entitlements; sourceTree = "<group>"; };
-		931FF4E02AE0918100540A4C /* Chapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Chapter.swift; path = KontinuaResourceEditor/Chapter.swift; sourceTree = "<group>"; };
+		931FF4E02AE0918100540A4C /* Chapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chapter.swift; sourceTree = "<group>"; };
+		932340AC2AEEA6FA0046B0CF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = KontinuaResourceEditor/Base.lproj/Prefs.xib; sourceTree = "<group>"; };
+		932340AE2AEEA7400046B0CF /* PrefsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefsController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +45,6 @@
 		931FF4C12AE08C8A00540A4C = {
 			isa = PBXGroup;
 			children = (
-				931FF4E02AE0918100540A4C /* Chapter.swift */,
 				931FF4CC2AE08C8A00540A4C /* KontinuaResourceEditor */,
 				931FF4CB2AE08C8A00540A4C /* Products */,
 			);
@@ -58,11 +61,14 @@
 		931FF4CC2AE08C8A00540A4C /* KontinuaResourceEditor */ = {
 			isa = PBXGroup;
 			children = (
-				931FF4CD2AE08C8B00540A4C /* AppDelegate.swift */,
-				931FF4CF2AE08C8B00540A4C /* Document.swift */,
-				931FF4D12AE08C8B00540A4C /* Document.xib */,
-				931FF4D42AE08C8D00540A4C /* Assets.xcassets */,
 				931FF4D62AE08C8D00540A4C /* MainMenu.xib */,
+				931FF4CD2AE08C8B00540A4C /* AppDelegate.swift */,
+				931FF4D12AE08C8B00540A4C /* Document.xib */,
+				931FF4CF2AE08C8B00540A4C /* Document.swift */,
+				931FF4E02AE0918100540A4C /* Chapter.swift */,
+				932340AB2AEEA6FA0046B0CF /* Prefs.xib */,
+				932340AE2AEEA7400046B0CF /* PrefsController.swift */,
+				931FF4D42AE08C8D00540A4C /* Assets.xcassets */,
 				931FF4D92AE08C8D00540A4C /* Info.plist */,
 				931FF4DA2AE08C8D00540A4C /* KontinuaResourceEditor.entitlements */,
 			);
@@ -129,6 +135,7 @@
 			files = (
 				931FF4D52AE08C8D00540A4C /* Assets.xcassets in Resources */,
 				931FF4D32AE08C8B00540A4C /* Document.xib in Resources */,
+				932340AD2AEEA6FA0046B0CF /* Prefs.xib in Resources */,
 				931FF4D82AE08C8D00540A4C /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,6 +147,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				932340AF2AEEA7400046B0CF /* PrefsController.swift in Sources */,
 				931FF4E12AE0918100540A4C /* Chapter.swift in Sources */,
 				931FF4D02AE08C8B00540A4C /* Document.swift in Sources */,
 				931FF4CE2AE08C8B00540A4C /* AppDelegate.swift in Sources */,
@@ -163,6 +171,14 @@
 				931FF4D72AE08C8D00540A4C /* Base */,
 			);
 			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		932340AB2AEEA6FA0046B0CF /* Prefs.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				932340AC2AEEA6FA0046B0CF /* Base */,
+			);
+			name = Prefs.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -296,7 +312,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = BAV7BNW2MB;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = KontinuaResourceEditor/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -324,7 +340,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = BAV7BNW2MB;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = KontinuaResourceEditor/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";

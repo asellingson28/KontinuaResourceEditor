@@ -30,8 +30,11 @@ class Document: NSDocument {
     var chapter: Chapter
     var selectedObjectiveIndex: Int
 
+    // Initialize with an empty chapter
     override init() {
         self.chapter = Chapter(files: [], requires: [], covers: [])
+        
+        // Nothing selected in the objectives table view
         self.selectedObjectiveIndex = -1
         super.init()
     }
@@ -321,9 +324,62 @@ extension Document {
         self.removeVideo(loc: r, from:currentObj)
     }
   
+    func removeReference(loc:Int, from obj:Objective) {
+        referenceTableView.beginUpdates()
+        let toDelete = obj.references[loc]
+        self.undoManager?.registerUndo(withTarget: self,
+                                       handler:{
+            (targetSelf) in targetSelf.insertReference(name:toDelete, at:loc, of:obj)
+        })
+        var indexSet = IndexSet()
+        indexSet.insert(loc)
+        obj.references.remove(at: loc)
+        if selectedObjectiveIndex != -1 && chapter.covers[selectedObjectiveIndex].id == obj.id {
+            referenceTableView.removeRows(at:indexSet)
+        }
+        referenceTableView.endUpdates()
+
+    }
+    func insertReference(name:String, at:Int, of obj:Objective) {
+        referenceTableView.beginUpdates()
+        self.undoManager?.registerUndo(withTarget: self,
+                                       handler: {
+            (targetSelf) in targetSelf.removeReference(loc:at, from:obj)
+        })
+        var indexSet = IndexSet()
+        indexSet.insert(at)
+        obj.videos.insert(name, at: at)
+        if selectedObjectiveIndex != -1 && chapter.covers[selectedObjectiveIndex].id == obj.id {
+            referenceTableView.insertRows(at: indexSet)
+        }
+        referenceTableView.endUpdates()
+    }
+    func replaceReference(at:Int, with:String, of obj:Objective) {
+        let oldValue = obj.videos[at]
+        self.undoManager?.registerUndo(withTarget: self,
+                                       handler: {
+            (targetSelf) in targetSelf.replaceReference(at: at, with: oldValue, of:obj)
+        })
+        obj.videos[at] = with
+    }
     @IBAction func addReference(sender: AnyObject) {
+        if selectedObjectiveIndex == -1 {
+            return
+        }
+        let currentObj = chapter.covers[selectedObjectiveIndex]
+        self.insertReference(name:"New", at: 0, of:currentObj)
+        referenceTableView.editColumn(0, row:0, with:nil, select:true)
     }
     @IBAction func removeReference(sender: AnyObject) {
+        if selectedObjectiveIndex == -1 {
+            return
+        }
+        let currentObj = chapter.covers[selectedObjectiveIndex]
+        let r = referenceTableView.selectedRow
+        if r == -1 {
+            return
+        }
+        self.removeVideo(loc: r, from:currentObj)
     }
 }
 
@@ -428,6 +484,15 @@ extension Document: NSTableViewDelegate, NSTableViewDataSource {
             }
             let obj = chapter.covers[selectedObjectiveIndex]
             self.replaceVideo(at: row, with: str, of: obj)
+            return
+        }
+        if tableView == referenceTableView {
+            if selectedObjectiveIndex == -1 {
+                return
+            }
+            let obj = chapter.covers[selectedObjectiveIndex]
+            self.replaceReference(at: row, with: str, of: obj)
+            return
         }
     }
     

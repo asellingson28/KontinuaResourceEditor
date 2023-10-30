@@ -151,6 +151,16 @@ CA
                                     <action selector="selectAll:" target="-1" id="VNm-Mi-diN"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="New Reference" keyEquivalent="m" id="e3N-af-hcr">
+                                <connections>
+                                    <action selector="addReferenceWithSender:" target="-1" id="rVc-1v-Ync"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="New Video" keyEquivalent="b" id="Msg-EU-Ju1">
+                                <connections>
+                                    <action selector="addVideoWithSender:" target="-1" id="mUX-Ai-qgs"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>

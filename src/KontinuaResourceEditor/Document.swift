@@ -82,22 +82,17 @@ extension Document {
             return read
         }
         // Check the string to see if it is URL-like
-        let str = pasteboard.pasteboardItems?.first?.string(forType:.string)
-        if let url:String = str {
+        read = pasteboard.pasteboardItems?.first?.string(forType:.string)
+        if let url:String = read {
             let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
             if let match = detector.firstMatch(in:url, options: [], range: NSRange(location: 0, length: url.utf16.count)) {
                 // it is a link, if the match covers the whole string
                 if (match.range.length == url.utf16.count) {
                     return url
-                } else {
-                    return nil
                 }
-            } else {
-                return nil
             }
-        } else {
-            return nil
         }
+        return nil
     }
       
     // What table view is currently in the responder chain?

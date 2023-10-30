@@ -15,6 +15,8 @@
 		931FF4E12AE0918100540A4C /* Chapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931FF4E02AE0918100540A4C /* Chapter.swift */; };
 		932340AD2AEEA6FA0046B0CF /* Prefs.xib in Resources */ = {isa = PBXBuildFile; fileRef = 932340AB2AEEA6FA0046B0CF /* Prefs.xib */; };
 		932340AF2AEEA7400046B0CF /* PrefsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932340AE2AEEA7400046B0CF /* PrefsController.swift */; };
+		932340B12AEF36730046B0CF /* Topic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932340B02AEF36730046B0CF /* Topic.swift */; };
+		932340B32AEF3A480046B0CF /* topic_index.json in Resources */ = {isa = PBXBuildFile; fileRef = 932340B22AEF3A480046B0CF /* topic_index.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +31,8 @@
 		931FF4E02AE0918100540A4C /* Chapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chapter.swift; sourceTree = "<group>"; };
 		932340AC2AEEA6FA0046B0CF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = KontinuaResourceEditor/Base.lproj/Prefs.xib; sourceTree = "<group>"; };
 		932340AE2AEEA7400046B0CF /* PrefsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefsController.swift; sourceTree = "<group>"; };
+		932340B02AEF36730046B0CF /* Topic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Topic.swift; sourceTree = "<group>"; };
+		932340B22AEF3A480046B0CF /* topic_index.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = topic_index.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,8 +70,10 @@
 				931FF4D12AE08C8B00540A4C /* Document.xib */,
 				931FF4CF2AE08C8B00540A4C /* Document.swift */,
 				931FF4E02AE0918100540A4C /* Chapter.swift */,
+				932340B02AEF36730046B0CF /* Topic.swift */,
 				932340AB2AEEA6FA0046B0CF /* Prefs.xib */,
 				932340AE2AEEA7400046B0CF /* PrefsController.swift */,
+				932340B22AEF3A480046B0CF /* topic_index.json */,
 				931FF4D42AE08C8D00540A4C /* Assets.xcassets */,
 				931FF4D92AE08C8D00540A4C /* Info.plist */,
 				931FF4DA2AE08C8D00540A4C /* KontinuaResourceEditor.entitlements */,
@@ -136,6 +142,7 @@
 				931FF4D52AE08C8D00540A4C /* Assets.xcassets in Resources */,
 				931FF4D32AE08C8B00540A4C /* Document.xib in Resources */,
 				932340AD2AEEA6FA0046B0CF /* Prefs.xib in Resources */,
+				932340B32AEF3A480046B0CF /* topic_index.json in Resources */,
 				931FF4D82AE08C8D00540A4C /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -148,6 +155,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				932340AF2AEEA7400046B0CF /* PrefsController.swift in Sources */,
+				932340B12AEF36730046B0CF /* Topic.swift in Sources */,
 				931FF4E12AE0918100540A4C /* Chapter.swift in Sources */,
 				931FF4D02AE08C8B00540A4C /* Document.swift in Sources */,
 				931FF4CE2AE08C8B00540A4C /* AppDelegate.swift in Sources */,

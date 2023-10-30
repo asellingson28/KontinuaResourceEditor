@@ -10,9 +10,35 @@ import os
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
+    
+    // All the topic ids
+    public var topicList:[String]
+    // The details about each topic
+    public var topicDict:[String:Topic]
 
+    override init() {
+        self.topicDict = [:]
+        self.topicList = []
+    }
+  
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // Insert code here to initialize your application
+        let defaults = UserDefaults()
+        // The user can have the latest topic_index
+        var path = defaults.value(forKeyPath: PrefsController.pathKey) as? String
+        
+        // Or use the one in the app wrapper
+        if path == nil {
+            path = Bundle.main.path(forResource:"topic_index", ofType: "json")
+        }
+
+        do {
+            let jsonData = try Data(contentsOf: URL(fileURLWithPath: path!))
+            let decoder = JSONDecoder()
+            topicDict = try decoder.decode([String:Topic].self, from: jsonData)
+            topicList = Array(topicDict.keys)
+        } catch {
+            os_log("Parsing error: \(error)")
+        }
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

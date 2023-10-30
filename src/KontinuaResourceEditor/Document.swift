@@ -26,7 +26,11 @@ class Document: NSDocument {
     @IBOutlet weak var removeRequiresButton: NSButton!
     @IBOutlet weak var addReferenceButton: NSButton!
     @IBOutlet weak var removeReferenceButton: NSButton!
-
+    
+    // Topic picker panel
+    @IBOutlet weak var pickerWindow: NSWindow!
+    @IBOutlet weak var topicTableView: NSTableView!
+    
     var chapter: Chapter
     var selectedObjectiveIndex: Int
 
@@ -36,7 +40,6 @@ class Document: NSDocument {
         
         // Nothing selected in the objectives table view
         self.selectedObjectiveIndex = -1
-        super.init()
     }
 
     override class var autosavesInPlace: Bool {
@@ -71,18 +74,26 @@ class Document: NSDocument {
 
 extension Document {
     
+    // Get a URL off the general pasteboard (as a string)
+    func pbURL() -> String? {
+        let pasteboard = NSPasteboard.general
+        let read = pasteboard.pasteboardItems?.first?.string(forType:.URL)
+        return read
+    }
+    
+    // What table view is currently in the responder chain?
     func selectedTableView() -> NSTableView? {
         var r = removeFileButton.window?.firstResponder
         while let node:NSResponder = r {
             if r is NSTableView {
                 return r as? NSTableView
             }
-            os_log("Responder: \(node)")
             r = node.nextResponder
         }
         return nil
     }
-    
+
+    // For the menu item (and keyboard equivalent)
     @IBAction func delete(_ sender: AnyObject) {
         let tv = self.selectedTableView()
         if tv == filesTableView {
@@ -192,9 +203,24 @@ extension Document {
         self.chapter.requires[at] = with
         requiresTableView.endUpdates()
     }
+    
+    @IBAction func cancelPicker(_ sender: AnyObject) {
+        requiresTableView.window?.endSheet(pickerWindow, returnCode:NSApplication.ModalResponse.cancel)
+    }
+    
+    @IBAction func acceptPicker(_ sender: AnyObject) {
+        requiresTableView.window?.endSheet(pickerWindow, returnCode:NSApplication.ModalResponse.OK)
+    }
     @IBAction func addRequires(sender: AnyObject) {
-        self.insertRequires(name:"New", at: 0)
-        requiresTableView.editColumn(0, row:0, with:nil, select:true)
+        requiresTableView.window?.beginSheet(pickerWindow, completionHandler: {
+            response in
+            if response == NSApplication.ModalResponse.OK {
+                let appDel = NSApplication.shared.delegate as! AppDelegate
+                let row = self.topicTableView.selectedRow
+                let key = appDel.topicList[row]
+                self.insertRequires(name:key, at: 0)
+            }
+        })
     }
     @IBAction func removeRequires(sender: AnyObject) {
         let r = requiresTableView.selectedRow
@@ -309,8 +335,13 @@ extension Document {
             return
         }
         let currentObj = chapter.covers[selectedObjectiveIndex]
-        self.insertVideo(name:"New", at: 0, of:currentObj)
-        videoTableView.editColumn(0, row:0, with:nil, select:true)
+        let url = self.pbURL()
+        if url == nil {
+            self.insertVideo(name:"New", at: 0, of:currentObj)
+            videoTableView.editColumn(0, row:0, with:nil, select:true)
+        } else {
+            self.insertVideo(name:url!, at:0, of:currentObj)
+        }
     }
     @IBAction func removeVideo(sender: AnyObject) {
         if selectedObjectiveIndex == -1 {
@@ -348,7 +379,7 @@ extension Document {
         })
         var indexSet = IndexSet()
         indexSet.insert(at)
-        obj.videos.insert(name, at: at)
+        obj.references.insert(name, at: at)
         if selectedObjectiveIndex != -1 && chapter.covers[selectedObjectiveIndex].id == obj.id {
             referenceTableView.insertRows(at: indexSet)
         }
@@ -360,15 +391,20 @@ extension Document {
                                        handler: {
             (targetSelf) in targetSelf.replaceReference(at: at, with: oldValue, of:obj)
         })
-        obj.videos[at] = with
+        obj.references[at] = with
     }
     @IBAction func addReference(sender: AnyObject) {
         if selectedObjectiveIndex == -1 {
             return
         }
         let currentObj = chapter.covers[selectedObjectiveIndex]
-        self.insertReference(name:"New", at: 0, of:currentObj)
-        referenceTableView.editColumn(0, row:0, with:nil, select:true)
+        let url = self.pbURL()
+        if url == nil {
+            self.insertReference(name:"New", at: 0, of:currentObj)
+            referenceTableView.editColumn(0, row:0, with:nil, select:true)
+        } else {
+            self.insertReference(name:url!, at:0, of:currentObj)
+        }
     }
     @IBAction func removeReference(sender: AnyObject) {
         if selectedObjectiveIndex == -1 {
@@ -400,7 +436,12 @@ extension Document: NSTableViewDelegate, NSTableViewDataSource {
         removeVideoButton.isEnabled = (videoTableView.selectedRow != -1)
         removeReferenceButton.isEnabled = (referenceTableView.selectedRow != -1)
     }
+    
     func numberOfRows(in tableView: NSTableView) -> Int {
+        if tableView == topicTableView {
+            let appDel = NSApplication.shared.delegate as! AppDelegate
+            return appDel.topicList.count
+        }
         if tableView == filesTableView {
             return chapter.files.count
         }
@@ -427,6 +468,17 @@ extension Document: NSTableViewDelegate, NSTableViewDataSource {
         row: Int
     ) -> Any?
     {
+        if tableView == topicTableView {
+            let appDel = NSApplication.shared.delegate as! AppDelegate
+            let key = appDel.topicList[row]
+            let identifier = (tableColumn?.identifier)!
+            if identifier.rawValue  == "id" {
+                return key
+            } else {
+                return appDel.topicDict[key]!.desc
+            }
+            
+        }
         if tableView == filesTableView {
             if row < chapter.files.count {
                 return chapter.files[row]
@@ -449,9 +501,17 @@ extension Document: NSTableViewDelegate, NSTableViewDataSource {
         }
         let obj = chapter.covers[selectedObjectiveIndex]
         if tableView == videoTableView {
-            return obj.videos[row]
+            if row < obj.videos.count {
+                return obj.videos[row]
+            } else {
+                return "ERROR!"
+            }
         } else {
-            return obj.references[row]
+            if row < obj.references.count {
+                return obj.references[row]
+            } else {
+                return "ERROR!"
+            }
         }
     }
 

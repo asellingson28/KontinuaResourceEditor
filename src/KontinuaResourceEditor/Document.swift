@@ -77,10 +77,29 @@ extension Document {
     // Get a URL off the general pasteboard (as a string)
     func pbURL() -> String? {
         let pasteboard = NSPasteboard.general
-        let read = pasteboard.pasteboardItems?.first?.string(forType:.URL)
-        return read
+        var read = pasteboard.pasteboardItems?.first?.string(forType:.URL)
+        if read != nil {
+            return read
+        }
+        // Check the string to see if it is URL-like
+        let str = pasteboard.pasteboardItems?.first?.string(forType:.string)
+        if let url:String = str {
+            let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+            if let match = detector.firstMatch(in:url, options: [], range: NSRange(location: 0, length: url.utf16.count)) {
+                // it is a link, if the match covers the whole string
+                if (match.range.length == url.utf16.count) {
+                    return url
+                } else {
+                    return nil
+                }
+            } else {
+                return nil
+            }
+        } else {
+            return nil
+        }
     }
-    
+      
     // What table view is currently in the responder chain?
     func selectedTableView() -> NSTableView? {
         var r = removeFileButton.window?.firstResponder
@@ -386,7 +405,7 @@ extension Document {
         referenceTableView.endUpdates()
     }
     func replaceReference(at:Int, with:String, of obj:Objective) {
-        let oldValue = obj.videos[at]
+        let oldValue = obj.references[at]
         self.undoManager?.registerUndo(withTarget: self,
                                        handler: {
             (targetSelf) in targetSelf.replaceReference(at: at, with: oldValue, of:obj)
@@ -415,7 +434,7 @@ extension Document {
         if r == -1 {
             return
         }
-        self.removeVideo(loc: r, from:currentObj)
+        self.removeReference(loc: r, from:currentObj)
     }
 }
 

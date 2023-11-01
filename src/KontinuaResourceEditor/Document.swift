@@ -62,6 +62,9 @@ class Document: NSDocument {
             chapter = try decoder.decode(Chapter.self, from: data)
         } catch {
             os_log("Parsing error: \(error)")
+            let a = NSAlert(error:error)
+            a.runModal()
+            
         }
     }
 
@@ -137,7 +140,7 @@ extension Document {
         let toDelete = self.chapter.files[loc]
         self.undoManager?.registerUndo(withTarget: self,
                                        handler:{
-            (targetSelf) in targetSelf.insertFile(name:toDelete, at:loc)
+            (targetSelf) in targetSelf.insertFile(file:toDelete, at:loc)
         })
         var indexSet = IndexSet()
         indexSet.insert(loc)
@@ -146,7 +149,7 @@ extension Document {
         filesTableView.endUpdates()
 
     }
-    func insertFile(name:String, at:Int) {
+    func insertFile(file:FileRef, at:Int) {
         filesTableView.beginUpdates()
         self.undoManager?.registerUndo(withTarget: self,
                                        handler: {
@@ -154,23 +157,46 @@ extension Document {
         })
         var indexSet = IndexSet()
         indexSet.insert(at)
-        self.chapter.files.insert(name, at: at)
+        self.chapter.files.insert(file, at: at)
         filesTableView.insertRows(at: indexSet)
         filesTableView.endUpdates()
     }
-    func replaceFile(at:Int, with:String) {
-        filesTableView.beginUpdates()
-        let oldValue = chapter.files[at]
+    func replaceFilePath(at:Int,with newPath:String) {
+        let oldValue = chapter.files[at].path
         self.undoManager?.registerUndo(withTarget: self,
                                        handler: {
-            (targetSelf) in targetSelf.replaceFile(at: at, with: oldValue)
+            (targetSelf) in targetSelf.replaceFilePath(at: at, with: oldValue)
         })
-        self.chapter.files[at] = with
-        filesTableView.endUpdates()
+        self.chapter.files[at].path = newPath
+        var rowIndexSet = IndexSet()
+        rowIndexSet.insert(at)
+        var colIndexSet = IndexSet()
+        colIndexSet.insert(0)
+        colIndexSet.insert(1)
+        filesTableView.reloadData(forRowIndexes:rowIndexSet, columnIndexes:colIndexSet)
+    }
+    
+    func replaceFileDesc(at:Int,with newDesc:String) {
+        let oldValue = chapter.files[at].desc
+        self.undoManager?.registerUndo(withTarget: self,
+                                       handler: {
+            (targetSelf) in targetSelf.replaceFileDesc(at: at, with: oldValue)
+        })
+        self.chapter.files[at].desc = newDesc
+        var rowIndexSet = IndexSet()
+        rowIndexSet.insert(at)
+        var colIndexSet = IndexSet()
+        colIndexSet.insert(0)
+        colIndexSet.insert(1)
+        filesTableView.reloadData(forRowIndexes:rowIndexSet, columnIndexes:colIndexSet)
     }
     @IBAction func addFile(sender: AnyObject) {
-        self.insertFile(name:"New", at: 0)
-        filesTableView.editColumn(0, row:0, with:nil, select:true)
+        let newFile = FileRef()
+        newFile.path = "New"
+        newFile.desc = "New"
+        let loc = self.chapter.files.count
+        self.insertFile(file:newFile, at: loc)
+        filesTableView.editColumn(0, row:loc, with:nil, select:true)
     }
     @IBAction func removeFile(sender: AnyObject) {
         let r = filesTableView.selectedRow
@@ -494,10 +520,12 @@ extension Document: NSTableViewDelegate, NSTableViewDataSource {
             
         }
         if tableView == filesTableView {
-            if row < chapter.files.count {
-                return chapter.files[row]
+            let obj:FileRef = chapter.files[row]
+            let key = (tableColumn?.identifier)!
+            if key.rawValue  == "path" {
+                return obj.path
             } else {
-                return String.init(format: "Error: Row %d !?", row)
+                return obj.desc
             }
         }
         
@@ -536,7 +564,12 @@ extension Document: NSTableViewDelegate, NSTableViewDataSource {
     {
         let str = object as! String
         if tableView == filesTableView {
-            self.replaceFile(at:row, with:str)
+            let key = (tableColumn?.identifier)!
+            if key.rawValue  == "path" {
+                self.replaceFilePath(at: row, with: str)
+            } else {
+                self.replaceFileDesc(at:row, with:str)
+            }
             return
         }
         if tableView == requiresTableView {

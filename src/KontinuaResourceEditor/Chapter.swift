@@ -19,8 +19,13 @@ class Objective:Codable {
     }
 }
 
+class FileRef:Codable {
+    var path:String = ""
+    var desc:String = ""
+}
+
 struct Chapter: Codable {
-    var files: [String]
+    var files: [FileRef]
     var requires: [String]
     var covers: [Objective]
 }

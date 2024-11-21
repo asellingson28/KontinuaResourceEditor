@@ -191,14 +191,17 @@ extension Document {
         filesTableView.reloadData(forRowIndexes:rowIndexSet, columnIndexes:colIndexSet)
     }
     @IBAction func addFile(sender: AnyObject) {
+        self.videoTableView.window?.endEditing(for: nil)
         let newFile = FileRef()
         newFile.path = "New"
         newFile.desc = "New"
         let loc = self.chapter.files.count
         self.insertFile(file:newFile, at: loc)
+        filesTableView.selectRowIndexes(IndexSet(integer:loc), byExtendingSelection:false)
         filesTableView.editColumn(0, row:loc, with:nil, select:true)
     }
     @IBAction func removeFile(sender: AnyObject) {
+        self.videoTableView.window?.endEditing(for: nil)
         let r = filesTableView.selectedRow
         if r == -1 {
             return
@@ -252,17 +255,20 @@ extension Document {
         requiresTableView.window?.endSheet(pickerWindow, returnCode:NSApplication.ModalResponse.OK)
     }
     @IBAction func addRequires(sender: AnyObject) {
+        self.videoTableView.window?.endEditing(for: nil)
         requiresTableView.window?.beginSheet(pickerWindow, completionHandler: {
             response in
             if response == NSApplication.ModalResponse.OK {
                 let appDel = NSApplication.shared.delegate as! AppDelegate
                 let row = self.topicTableView.selectedRow
                 let key = appDel.topicList[row]
-                self.insertRequires(name:key, at: 0)
+                let lastIndex = self.chapter.requires.count
+                self.insertRequires(name:key, at:lastIndex)
             }
         })
     }
     @IBAction func removeRequires(sender: AnyObject) {
+        self.videoTableView.window?.endEditing(for: nil)
         let r = requiresTableView.selectedRow
         if r == -1 {
             return
@@ -318,12 +324,18 @@ extension Document {
         self.chapter.covers[at].desc = with
     }
     @IBAction func addObjective(sender: AnyObject) {
+        self.videoTableView.window?.endEditing(for: nil)
         let newObj = Objective()
-        
-        self.insertObjective(obj: newObj, at: 0)
-        objectiveTableView.editColumn(0, row:0, with:nil, select:true)
+        newObj.id = "new"
+        newObj.desc = "New"
+        let last = self.chapter.covers.count;
+        self.insertObjective(obj: newObj, at: last)
+        objectiveTableView.selectRowIndexes(IndexSet(integer:last), byExtendingSelection: false)
+        objectiveTableView.editColumn(0, row:last, with:nil, select:true)
     }
     @IBAction func removeObjective(sender: AnyObject) {
+        self.videoTableView.window?.endEditing(for: nil)
+
         let r = objectiveTableView.selectedRow
         if r == -1 {
             return
@@ -374,19 +386,25 @@ extension Document {
         if selectedObjectiveIndex == -1 {
             return
         }
+        self.videoTableView.window?.endEditing(for: nil)
         let currentObj = chapter.covers[selectedObjectiveIndex]
+        let lastIndex = currentObj.videos.count
         let url = self.pbURL()
         if url == nil {
-            self.insertVideo(name:"New", at: 0, of:currentObj)
-            videoTableView.editColumn(0, row:0, with:nil, select:true)
+            self.insertVideo(name:"New", at: lastIndex, of:currentObj)
+            videoTableView.selectRowIndexes(IndexSet(integer:lastIndex), byExtendingSelection:false)
+            videoTableView.editColumn(0, row:lastIndex, with:nil, select:true)
         } else {
-            self.insertVideo(name:url!, at:0, of:currentObj)
+            self.insertVideo(name:url!, at:lastIndex, of:currentObj)
+            videoTableView.selectRowIndexes(IndexSet(integer:lastIndex), byExtendingSelection:false)
         }
     }
     @IBAction func removeVideo(sender: AnyObject) {
         if selectedObjectiveIndex == -1 {
             return
         }
+        self.videoTableView.window?.endEditing(for: nil)
+
         let currentObj = chapter.covers[selectedObjectiveIndex]
         let r = videoTableView.selectedRow
         if r == -1 {
@@ -437,19 +455,23 @@ extension Document {
         if selectedObjectiveIndex == -1 {
             return
         }
+        self.videoTableView.window?.endEditing(for: nil)
         let currentObj = chapter.covers[selectedObjectiveIndex]
+        let lastIndex = currentObj.references.count
         let url = self.pbURL()
         if url == nil {
-            self.insertReference(name:"New", at: 0, of:currentObj)
-            referenceTableView.editColumn(0, row:0, with:nil, select:true)
+            self.insertReference(name:"New", at:lastIndex, of:currentObj)
+            referenceTableView.selectRowIndexes(IndexSet(integer:lastIndex), byExtendingSelection: false)
+            referenceTableView.editColumn(0, row:lastIndex, with:nil, select:true)
         } else {
-            self.insertReference(name:url!, at:0, of:currentObj)
+            self.insertReference(name:url!, at:lastIndex, of:currentObj)
         }
     }
     @IBAction func removeReference(sender: AnyObject) {
         if selectedObjectiveIndex == -1 {
             return
         }
+        self.videoTableView.window?.endEditing(for: nil)
         let currentObj = chapter.covers[selectedObjectiveIndex]
         let r = referenceTableView.selectedRow
         if r == -1 {
@@ -477,6 +499,7 @@ extension Document: NSTableViewDelegate, NSTableViewDataSource {
         removeReferenceButton.isEnabled = (referenceTableView.selectedRow != -1)
     }
     
+
     func numberOfRows(in tableView: NSTableView) -> Int {
         if tableView == topicTableView {
             let appDel = NSApplication.shared.delegate as! AppDelegate

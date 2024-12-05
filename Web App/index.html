@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Resources JSON Editor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .logo {
+      display: block;
+      margin: 0 auto 20px;
+      max-width: 320px;
+    }
+    .input-container {
+      margin-bottom: 10px;
+    }
+    .cover {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      position: relative;
+    }
+    .remove-cover {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      padding: 5px;
+      cursor: pointer;
+    }
+    textarea {
+      width: 100%;
+      resize: vertical;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #generateButton {
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+    .button-section {
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <img src="https://kontinua.org/wp-content/uploads/2022/09/kontinua-logo-full-320x79.png" alt="Logo" class="logo">
+  <h1>Digital Resources JSON Editor</h1>
+  <input type="file" id="fileInput" accept=".json" onchange="handleFileUpload(event)">
+  <form id="jsonForm">
+    <h2>Requires</h2>
+    <div id="requiresDiv"></div>
+    <button type="button" onclick="addInputField('requires')">Add Prerequisite</button>
+
+    <h2>Topics</h2>
+    <div id="coversDiv"></div>
+    <button type="button" onclick="addCover()">Add Topic</button>
+
+    <h2>Files</h2>
+    <div id="filesDiv"></div>
+    <button type="button" onclick="addInputField('files')">Add File</button>
+
+    <div class="button-section">
+      <h2>Generate JSON</h2>
+      <button id="generateButton" type="button" onclick="generateJSON()">Generate JSON</button>
+      <p id="errorMessage" class="error"></p>
+    </div>
+  </form>
+
+  <h2>Output</h2>
+  <pre id="output"></pre>
+  <button type="button" onclick="downloadJSON()">Download JSON</button>
+
+  <script>
+    let jsonStructure = {
+      requires: [],
+      covers: [],
+      files: []
+    };
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            jsonStructure = JSON.parse(e.target.result);
+            populateForm(jsonStructure);
+          } catch (err) {
+            alert("Invalid JSON file");
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    function populateForm(json) {
+      const requiresDiv = document.getElementById("requiresDiv");
+      const coversDiv = document.getElementById("coversDiv");
+      const filesDiv = document.getElementById("filesDiv");
+
+      requiresDiv.innerHTML = "";
+      coversDiv.innerHTML = "";
+      filesDiv.innerHTML = "";
+
+      json.requires.forEach(req => addInputField("requires", req));
+      json.covers.forEach(cover => addCover(cover));
+      json.files.forEach(file => addInputField("files", file));
+    }
+
+    function addInputField(type, value = "") {
+      const div = document.getElementById(type + "Div");
+      const inputContainer = document.createElement("div");
+      inputContainer.className = "input-container";
+      const textarea = document.createElement("textarea");
+      textarea.placeholder = `Enter ${type}`;
+      textarea.className = `${type}Input`;
+      textarea.value = value;
+      inputContainer.appendChild(textarea);
+      div.appendChild(inputContainer);
+    }
+
+    function addCover(cover = { id: "", desc: "", references: [], videos: [] }) {
+      const coversDiv = document.getElementById("coversDiv");
+      const coverContainer = document.createElement("div");
+      coverContainer.className = "cover";
+
+      const removeButton = document.createElement("button");
+      removeButton.className = "remove-cover";
+      removeButton.textContent = "Remove";
+      removeButton.onclick = () => coversDiv.removeChild(coverContainer);
+
+      const idTextarea = document.createElement("textarea");
+      idTextarea.placeholder = "ID";
+      idTextarea.className = "coverId";
+      idTextarea.value = cover.id;
+
+      const descTextarea = document.createElement("textarea");
+      descTextarea.placeholder = "Description";
+      descTextarea.className = "coverDesc";
+      descTextarea.value = cover.desc;
+
+      const refsDiv = document.createElement("div");
+      refsDiv.className = "referencesDiv";
+      const refsLabel = document.createElement("div");
+      refsLabel.textContent = "References:";
+      cover.references.forEach(ref => addInputFieldToSection(refsDiv, "references", ref));
+      const addRefButton = document.createElement("button");
+      addRefButton.type = "button";
+      addRefButton.textContent = "Add Reference";
+      addRefButton.onclick = () => addInputFieldToSection(refsDiv, "references");
+
+      const videosDiv = document.createElement("div");
+      videosDiv.className = "videosDiv";
+      const videosLabel = document.createElement("div");
+      videosLabel.textContent = "Videos:";
+      cover.videos.forEach(video => addInputFieldToSection(videosDiv, "videos", video));
+      const addVideoButton = document.createElement("button");
+      addVideoButton.type = "button";
+      addVideoButton.textContent = "Add Video";
+      addVideoButton.onclick = () => addInputFieldToSection(videosDiv, "videos");
+
+      coverContainer.appendChild(removeButton);
+      coverContainer.appendChild(idTextarea);
+      coverContainer.appendChild(descTextarea);
+      coverContainer.appendChild(refsLabel);
+      coverContainer.appendChild(refsDiv);
+      coverContainer.appendChild(addRefButton);
+      coverContainer.appendChild(videosLabel);
+      coverContainer.appendChild(videosDiv);
+      coverContainer.appendChild(addVideoButton);
+      coversDiv.appendChild(coverContainer);
+    }
+
+    function addInputFieldToSection(section, type, value = "") {
+      const inputContainer = document.createElement("div");
+      inputContainer.className = "input-container";
+      const textarea = document.createElement("textarea");
+      textarea.placeholder = `Enter ${type}`;
+      textarea.className = `${type}Input`;
+      textarea.value = value;
+      inputContainer.appendChild(textarea);
+      section.appendChild(inputContainer);
+    }
+
+    function generateJSON() {
+      const json = { requires: [], covers: [], files: [] };
+      const errorMessage = document.getElementById("errorMessage");
+      errorMessage.textContent = "";
+
+      document.querySelectorAll(".requiresInput").forEach(textarea => {
+        if (textarea.value.trim()) json.requires.push(textarea.value.trim());
+      });
+
+      let valid = true;
+      document.querySelectorAll(".cover").forEach(cover => {
+        const id = cover.querySelector(".coverId").value.trim();
+        const desc = cover.querySelector(".coverDesc").value.trim();
+        const references = [];
+        const videos = [];
+
+        cover.querySelectorAll(".referencesInput").forEach(textarea => {
+          if (textarea.value.trim()) references.push(textarea.value.trim());
+        });
+
+        cover.querySelectorAll(".videosInput").forEach(textarea => {
+          if (textarea.value.trim()) videos.push(textarea.value.trim());
+        });
+
+        if (!id || !desc) {
+          errorMessage.textContent = "Error: Each topic must have both an ID and a Description.";
+          valid = false;
+          return;
+        }
+
+        json.covers.push({ id, desc, references, videos });
+      });
+
+      if (!valid) return;
+
+      document.querySelectorAll(".filesInput").forEach(textarea => {
+        if (textarea.value.trim()) json.files.push(textarea.value.trim());
+      });
+
+      document.getElementById("output").textContent = JSON.stringify(json, null, 2);
+    }
+
+    function downloadJSON() {
+      const json = document.getElementById("output").textContent;
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "digital_resources.json";
+      link.click();
+    }
+  </script>
+</body>
+</html>

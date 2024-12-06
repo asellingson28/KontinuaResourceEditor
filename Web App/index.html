@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="https://kontinua.org/wp-content/uploads/2022/09/favicon-150x150.png" sizes="32x32" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Digital Resources JSON Editor</title>
   <style>
@@ -41,6 +42,7 @@
     textarea {
       width: 100%;
       resize: vertical;
+      font-family: Arial, Helvetica, sans-serif ;
     }
     .error {
       color: red;
@@ -67,6 +69,10 @@
     .button-section {
       margin-top: 40px;
     }
+    button:disabled {
+      background-color: gray;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -87,15 +93,14 @@
     <button type="button" onclick="addInputField('files')">Add File</button>
 
     <div class="button-section">
-      <h2>Generate JSON</h2>
-      <button id="generateButton" type="button" onclick="generateJSON()">Generate JSON</button>
+      <button type="button" id="generateButton" onclick="generateJSON()">Generate JSON</button>
       <p id="errorMessage" class="error"></p>
     </div>
   </form>
 
   <h2>Output</h2>
   <pre id="output"></pre>
-  <button type="button" onclick="downloadJSON()">Download JSON</button>
+  <button type="button" onclick="downloadJSON()" id="downloadButton" disabled>Download JSON</button>
 
   <script>
     let jsonStructure = {
@@ -249,6 +254,8 @@
       });
 
       document.getElementById("output").textContent = JSON.stringify(json, null, 2);
+
+      document.getElementById("downloadButton").disabled = false;
     }
 
     function downloadJSON() {

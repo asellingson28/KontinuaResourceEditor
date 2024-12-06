@@ -109,6 +109,27 @@
       files: []
     };
 
+    document.addEventListener("dragover", (event) => event.preventDefault());
+    document.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const file = event.dataTransfer.files[0];
+      if (file && file.type === "application/json") {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                jsonStructure = JSON.parse(e.target.result);
+                populateForm(jsonStructure);
+            } catch (err) {
+                alert("Invalid JSON format.");
+            }
+        };
+        reader.readAsText(file);
+      } else {
+        alert("Please drop a valid JSON file.");
+      }
+    });
+
+
     function handleFileUpload(event) {
       const file = event.target.files[0];
       if (file) {

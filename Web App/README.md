@@ -8,7 +8,7 @@ Simply move through the fields, skipping the upload field at the beginning. It i
 
 ## Editing JSONs
 
-Upload the JSON you want to edit at the first step. If it is not a valid format, it will be rejected. The fields should auto-populate and you should be good to edit from there.
+Drag and drop or click to upload the JSON you want to edit at the first step. If it is not a valid format, it will be rejected. The fields should auto-populate and you should be good to edit from there.
 
 ## Output
 

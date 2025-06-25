@@ -255,18 +255,25 @@ extension Document {
         requiresTableView.window?.endSheet(pickerWindow, returnCode:NSApplication.ModalResponse.OK)
     }
     @IBAction func addRequires(sender: AnyObject) {
+        // Finish any in-flight edits so Undo works correctly
         self.videoTableView.window?.endEditing(for: nil)
-        requiresTableView.window?.beginSheet(pickerWindow, completionHandler: {
-            response in
-            if response == NSApplication.ModalResponse.OK {
-                let appDel = NSApplication.shared.delegate as! AppDelegate
-                let row = self.topicTableView.selectedRow
-                let key = appDel.topicList[row]
-                let lastIndex = self.chapter.requires.count
-                self.insertRequires(name:key, at:lastIndex)
+
+        requiresTableView.window?.beginSheet(pickerWindow) { response in
+            guard response == .OK else { return }            // user hit “Cancel”
+
+            let appDel = NSApplication.shared.delegate as! AppDelegate
+            let row = self.topicTableView.selectedRow        // = −1 if nothing picked
+            guard row >= 0 && row < appDel.topicList.count else {
+                os_log("addRequires: no topic selected – ignoring request")
+                return                                       // nothing selected → no crash
             }
-        })
+
+            let key = appDel.topicList[row]
+            let lastIndex = self.chapter.requires.count
+            self.insertRequires(name: key, at: lastIndex)
+        }
     }
+
     @IBAction func removeRequires(sender: AnyObject) {
         self.videoTableView.window?.endEditing(for: nil)
         let r = requiresTableView.selectedRow
@@ -305,24 +312,24 @@ extension Document {
         videoTableView.reloadData()
         referenceTableView.reloadData()
     }
-    func replaceObjectiveID(at:Int, with:String) {
+    func replaceObjectiveID(at row: Int, with newID: String) {
         objectiveTableView.beginUpdates()
-        let oldValue = chapter.covers[at].id
-        self.undoManager?.registerUndo(withTarget: self,
-                                       handler: {
-            (targetSelf) in targetSelf.replaceObjectiveID(at: at, with: oldValue)
-        })
-        self.chapter.covers[at].id = with
+        let oldID = chapter.covers[row].id
+        undoManager?.registerUndo(withTarget: self) { $0.replaceObjectiveID(at: row, with: oldID) }
+        chapter.covers[row].id = newID
         objectiveTableView.endUpdates()
+
+        registerTopic(id: newID, desc: chapter.covers[row].desc)             // <–– NEW
     }
-    func replaceObjectiveDesc(at:Int, with:String) {
-        let oldValue = chapter.covers[at].desc
-        self.undoManager?.registerUndo(withTarget: self,
-                                       handler: {
-            (targetSelf) in targetSelf.replaceObjectiveDesc(at: at, with: oldValue)
-        })
-        self.chapter.covers[at].desc = with
+    
+    func replaceObjectiveDesc(at row: Int, with newDesc: String) {
+        let oldDesc = chapter.covers[row].desc
+        undoManager?.registerUndo(withTarget: self) { $0.replaceObjectiveDesc(at: row, with: oldDesc) }
+        chapter.covers[row].desc = newDesc
+
+        registerTopic(id: chapter.covers[row].id, desc: newDesc)             // <–– NEW
     }
+    
     @IBAction func addObjective(sender: AnyObject) {
         self.videoTableView.window?.endEditing(for: nil)
         let newObj = Objective()
@@ -635,5 +642,17 @@ extension Document: NSTableViewDelegate, NSTableViewDataSource {
         }
         self.updateButtons()
     }
- 
+    // MARK: – Topic catalogue helper
+    fileprivate func registerTopic(id: String, desc: String) {
+        let appDel = NSApplication.shared.delegate as! AppDelegate
+        if !appDel.topicList.contains(id) {                   // brand-new key
+            appDel.topicList.append(id)
+        }
+        appDel.topicDict[id] = Topic(desc: desc,
+                                     chap_id: self.fileURL?
+                                         .deletingPathExtension().lastPathComponent ?? "")
+        appDel.topicList.sort()                               // keep it tidy
+        topicTableView.reloadData()                           // picker reflects changes immediately
+    }
+
 }
